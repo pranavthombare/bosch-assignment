@@ -11,7 +11,7 @@ services:
       - PYTHONUNBUFFERED=1
       - PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
       - DRIVELM_MODEL_ID=Qwen/Qwen3.5-0.8B
-      - DRIVELM_LORA_PATH=/app/models/qwen-lora
+      - DRIVELM_LORA_PATH=${DRIVELM_LORA_PATH:-/app/models/qwen-lora}
       - DRIVELM_LORA_NAME=drivelm-lora
       - DRIVELM_VLLM_HOST=0.0.0.0
       - DRIVELM_VLLM_PORT=8001

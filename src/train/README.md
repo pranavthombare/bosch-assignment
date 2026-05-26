@@ -47,9 +47,9 @@ Three issues are visible by inspection:
 
 Quantitatively, the natural-distribution LoRA gave +0.37 ROUGE-L overall but −0.34 on behavior. See `artifacts/comparison.json` and `artifacts/qualitative_lora_vs_base.json` for the full breakdown.
 
-## Recommended next training run
+## Stratified retrain (implemented and ablated)
 
-Stratify the training sample at two levels — category × answer-pattern. Target distribution:
+The proposed stratification is implemented in `src/data/pipeline.py::stratified_samples` and toggled by `DRIVELM_TRAIN__STRATIFIED=true`. The plan:
 
 | Category | Yes | No | None-ptn | other | Total |
 | --- | ---: | ---: | ---: | ---: | ---: |
@@ -57,12 +57,38 @@ Stratify the training sample at two levels — category × answer-pattern. Targe
 | prediction | 50 | 50 | 50 | 100 | 250 |
 | planning | 50 | 50 | 25¹ | 125 | 250 |
 | behavior | — | — | — | 38² | 38 |
-| **Total** | 150 | 150 | 75 | 413 | **788** |
+| **Total** | 150 | 150 | 75 | 413 | **788** distinct, **902** with behavior 4× upsample |
 
 ¹ Capped to the number of None-pattern planning samples available.
-² All 38 behavior samples, upsampled ~4× during training so the gradient weight is comparable to the ~250-sample categories.
+² All 38 behavior samples replicated 4× in the training list so the gradient weight is comparable to the ~250-sample categories.
 
-This is not yet implemented in `finetune.py`. A `--stratified` flag plus a helper in `src/data/pipeline.py` is the minimum surface area. The hypothesis to validate: stratification recovers the behavior category without giving up the perception/prediction/planning wins of the natural-distribution run.
+```bash
+DRIVELM_TRAIN__STRATIFIED=true \
+.venv/bin/python src/train/finetune.py
+```
+
+### Postscript: the LR sweep changed the conclusion
+
+After running the stratified ablation, a 3-point LR sweep (1e-4 / 2e-4 / 5e-4) on the original natural-distribution data showed that **the behavior collapse was an LR effect, not a sampling effect.** Just lowering LR to 1e-4 recovered behavior to ROUGE-L 0.877 — almost matching the stratified run's 0.911 — without any data change and without the prediction regression.
+
+This means the stratified ablation, while measurably useful for behavior, **was solving the wrong problem.** The right diagnosis was hyperparameter, not data composition.
+
+The follow-up experiment combined both signals — **proportional sampling (preserves natural within-category priors with a min-floor on rare patterns) + lr=1e-4** — and produced the best overall adapter (ROUGE-L 0.621, see top-level README's "Baseline vs LoRA — full ablation series" table).
+
+### Result of the original stratified ablation
+
+The hypothesis (stratification recovers behavior without losing the wins) was **partially confirmed**:
+
+- ✅ Behavior recovered: ROUGE-L 0.036 → **0.911** (25× lift, now the strongest category)
+- ✅ Perception improved: 0.489 → **0.615** (+0.127 — Yes-bias overcorrection fixed by balanced Yes/No)
+- ✅ Planning unchanged: 0.502 → 0.507
+- ❌ Prediction regressed: 0.659 → **0.368** (−0.291). The natural-distribution training had **119 No + 49 None-pattern prediction samples**; the eval set is rich in those exact answer patterns. Stratified sampling deliberately under-represented them (50 each), so the adapter no longer over-fits the `None, no, none.` shortcut and gives back ROUGE-L on that category.
+
+Overall ROUGE-L 0.541 → 0.518 (small headline regression in exchange for a uniformly competent adapter with no catastrophic category failure).
+
+**Published artifact policy.** All six adapters from the sweep are published on Hugging Face. The original `pranavthombare/qwen3.5-0.8b-drivelm-lora` remains as the historical canonical (nat-1024 lr=2e-4); the newer `qwen3.5-0.8b-drivelm-lora-proportional` is the recommended one for max overall quality, and `qwen3.5-0.8b-drivelm-lora-lr1e4` is recommended for behavior-heavy applications. Pulling whichever one you want back into `models/qwen-lora` from HF is the standard reproduction step; `vllm_launcher.py` auto-attaches whatever's there.
+
+The "weighted stratification" idea this section originally proposed — preserve natural within-category proportions with a min-floor on rare patterns — was implemented in `proportional_samples()` and was the run that produced the best overall adapter. The genuinely-next experiment would push behavior upsampling higher (8× or 12× instead of 4×) to close the behavior gap on the proportional variant without giving up the overall-quality wins.
 
 ## Outputs
 

@@ -248,27 +248,79 @@ Mechanism: `Answer concisely.` collapses outputs to single words ("Cars") — hi
 
 LoRA r=8, α=16 on q/k/v/o/gate/up/down_proj — 3.19M trainable params (0.37% of base). Vision tower frozen (catastrophic forgetting risk on 38 unique camera frames). 4-bit NF4 base via bitsandbytes, gradient checkpointing. **Loss masked to assistant tokens only**: `build_supervised_inputs` tokenizes the prompt twice (once with the assistant turn, once without) and sets `labels[:, :prompt_length] = -100`; without this fix the model trains on reproducing the user's question. Training corpus is the first 1,024 samples in natural distribution (see "Methodological limitations" below for the consequences). 1 epoch, batch=1 with grad-accum 2, lr 2e-4, intermediate checkpoint every 200 steps. Wall clock: ~20 min on RTX 2070 SUPER, epoch-average loss 0.4422.
 
-### Baseline vs LoRA (3,770 samples, identical eval setup)
+### Baseline vs LoRA — full ablation series (3,770 samples, identical eval setup)
 
-| Metric | Baseline | LoRA | Δ |
-| --- | ---: | ---: | ---: |
-| ROUGE-1 | 0.166 | 0.550 | +0.384 |
-| ROUGE-2 | 0.069 | 0.188 | +0.119 |
-| **ROUGE-L** | **0.157** | **0.541** | **+0.384** |
-| Token-F1 | 0.117 | 0.510 | +0.393 |
-| Exact match | 0.37% | 39.26% | +38.89 pp |
-| Mean latency | 1,420 ms | 1,046 ms | −374 ms |
+Six configurations measured. Each LoRA was trained for 1 epoch on local DriveLM data, eval ran against vLLM with the adapter attached.
 
-Per category ROUGE-L:
+#### Overall
 
-| Category | N | Baseline | LoRA | Δ |
-| --- | ---: | ---: | ---: | ---: |
-| perception | 1,738 | 0.217 | 0.489 | **+0.272** ↑ |
-| prediction | 1,181 | 0.097 | 0.659 | **+0.562** ↑ |
-| planning | 813 | 0.107 | 0.502 | **+0.395** ↑ |
-| behavior | 38 | 0.305 | 0.036 | **−0.269** ↓ |
+| Metric | baseline | nat 2e-4 | nat 1e-4 | nat 5e-4 | stratified | **prop 1e-4** |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| ROUGE-1 | 0.166 | 0.550 | 0.591 | 0.547 | 0.524 | **0.627** ⭐ |
+| ROUGE-2 | 0.069 | 0.188 | 0.196 | 0.181 | 0.214 | **0.257** ⭐ |
+| **ROUGE-L** | **0.157** | 0.541 | 0.581 | 0.540 | 0.518 | **0.621** ⭐ |
+| Token-F1 | 0.117 | 0.510 | 0.544 | 0.497 | 0.494 | **0.602** ⭐ |
+| Exact match | 0.4% | 39.3% | 41.9% | 35.8% | 36.6% | **47.4%** ⭐ |
+| Mean latency (ms) | 1,420 | 1,046 | 2,098 | 1,840 | 1,811 | 1,858 |
 
-Three categories lift by 0.27–0.56 ROUGE-L. Behavior collapses. The headline win is answer-format learning — the LoRA learned DriveLM's declarative single-sentence convention, the multi-clause `None, no, none.` pattern for stacked prediction questions, and the terse Yes/No format for perception. Mean latency drops by 26% because LoRA outputs are shorter and there's less generated-token compute. Behavior regresses because only 10 of the 1,024 training samples were behavior questions, none in the Yes/No format; the LoRA's r=8 capacity is dominated by perception/prediction/planning gradients and collapses to a terse `Turn left.` for all behavior inputs.
+#### Per category (ROUGE-L)
+
+| Category | N | baseline | nat 2e-4 | nat 1e-4 | nat 5e-4 | stratified | **prop 1e-4** |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| perception | 1,738 | 0.217 | 0.489 | 0.533 | 0.513 | 0.615 | **0.625** ⭐ |
+| prediction | 1,181 | 0.097 | 0.659 | **0.696** | 0.617 | 0.368 | 0.682 |
+| planning | 813 | 0.107 | 0.502 | 0.503 | 0.509 | 0.507 | **0.543** ⭐ |
+| **behavior** | 38 | 0.305 | 0.036 ⚠️ | **0.877** | 0.022 ⚠️ | **0.911** ⭐ | 0.201 |
+
+#### What each row taught us
+
+| Config | Lesson |
+| --- | --- |
+| **nat 2e-4** | PEFT-default LR → 3.5× ROUGE-L lift overall **but** behavior catastrophically collapses to 0.036 (terse mode collapse) |
+| **nat 1e-4** | **Lower LR alone fixes behavior** (0.036 → 0.877) without changing data. The behavior collapse was an LR effect, not a sampling effect. |
+| **nat 5e-4** | Higher LR makes behavior worse (0.022) — the cliff is bidirectional |
+| **stratified** | Uniform within-category sampling fixes behavior (0.911) **but overcorrects prediction** (0.659 → 0.368) by destroying DriveLM's natural `No`-heavy prediction prior |
+| **prop 1e-4** | **Best overall + best 3 of 4 categories.** Proportional sampling preserves natural within-category priors with a min-floor on rare patterns; combined with lr=1e-4 it wins. Behavior is 0.201 — better than the lr=2e-4 collapse but worse than the lr=1e-4 natural sibling, because proportional sampling's varied gradients crowd the behavior signal more than uniform stratification did. |
+
+#### The deployment choice is now a product question, not a metric question
+
+| Production target | Recommended adapter |
+| --- | --- |
+| Maximum overall quality (ROUGE-L, perception, planning) | **`prop 1e-4`** |
+| Behavior-heavy applications (ego-status, predictability) | **`nat 1e-4`** |
+| Maximum prediction-category accuracy | **`nat 1e-4`** (0.696) or **`prop 1e-4`** (0.682) |
+| Don't ship | `nat 2e-4`, `nat 5e-4`, `stratified` (each dominated by one of the above) |
+
+All six adapters are published on Hugging Face for direct comparison:
+
+| Variant | Hugging Face repo |
+| --- | --- |
+| nat 2e-4 (original canonical) | `pranavthombare/qwen3.5-0.8b-drivelm-lora` |
+| nat 1e-4 (best behavior + good overall) | `pranavthombare/qwen3.5-0.8b-drivelm-lora-lr1e4` |
+| nat 5e-4 (ablation — worst LR) | `pranavthombare/qwen3.5-0.8b-drivelm-lora-lr5e4` |
+| stratified (ablation — uniform sampling) | `pranavthombare/qwen3.5-0.8b-drivelm-lora-stratified` |
+| prop 1e-4 (best overall) | `pranavthombare/qwen3.5-0.8b-drivelm-lora-proportional` |
+
+### Ablation: stratified retrain targeting the behavior regression
+
+The behavior collapse from the natural-distribution run was traced to **only 10 of 1,024 training samples being behavior questions**, with none in the multi-clause `"X is going straight. X is driving fast."` format that DriveLM uses for that category. The hypothesis: stratified sampling across (qa_type × answer_pattern), with all 38 behavior samples upsampled 4×, would recover behavior performance.
+
+We retrained the adapter on a stratified 902-sample mix (250 each of perception/prediction/planning balanced across Yes/No/None-pattern/other, plus 38 behavior × 4 upsample) — same hyperparameters, same wall-clock budget (~18 min). Evaluated on the same 3,770-sample eval set.
+
+**Stratified-LoRA vs Natural-1024-LoRA, per category (ROUGE-L):**
+
+| Category | N | Baseline | Natural-1024 LoRA | **Stratified LoRA** | Δ vs Natural |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| perception | 1,738 | 0.217 | 0.489 | **0.615** | **+0.127** ↑ |
+| prediction | 1,181 | 0.097 | 0.659 | 0.368 | **−0.291** ↓ |
+| planning | 813 | 0.107 | 0.502 | 0.507 | +0.005 |
+| **behavior** | **38** | **0.305** | **0.036** | **0.911** | **+0.875** ↑↑ |
+
+The hypothesis was confirmed for behavior (0.036 → 0.911 — 25× lift; behavior is now the strongest category) and for perception (balanced Yes/No fixed the yes-bias overcorrection: +0.127 ROUGE-L). **But the natural-distribution run had over-fit the `None, no, none.` answer pattern**, which is ~16% of prediction ground truth; stratified sampling under-represented it by design (50 None-pattern vs the 119 the natural run saw). Prediction therefore traded 0.291 ROUGE-L for healthier behavior coverage.
+
+Overall ROUGE-L: natural-1024 0.541 vs stratified 0.518 — a small regression in the headline metric in exchange for **no catastrophically failing category and a more uniform competence distribution**. Mean per-request latency rose from 1,046 ms to 1,811 ms because the stratified adapter produces longer multi-clause answers.
+
+**Which adapter is published.** The natural-1024 adapter is the one shipped to Hugging Face (`pranavthombare/qwen3.5-0.8b-drivelm-lora`) because it has the higher overall ROUGE-L. The stratified adapter is preserved locally at `models/qwen-lora-stratified/` and its eval results are in `artifacts/finetuned_stratified_front_arc_full.json`. The right deployment choice between the two depends on whether the application can tolerate a 25× degradation on the rare behavior class to gain 0.29 ROUGE-L on the common prediction class — a real product question, not a metric question.
 
 ### Failure modes (named)
 

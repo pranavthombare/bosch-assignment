@@ -62,6 +62,7 @@ class TrainCfg:
     output_dir: Path = Path("models/qwen-lora")
     stratified: bool = False
     stratified_seed: int = 42
+    sampling: str = "natural"  # natural | stratified | proportional
 
 
 @dataclass(frozen=True)

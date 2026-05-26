@@ -205,6 +205,100 @@ def stratified_samples(
     return selected
 
 
+def proportional_samples(
+    dataset: "DriveLMDataset",
+    nuscenes_dir: Path,
+    seed: int = 42,
+    per_category: int = 250,
+    behavior_upsample: int = 4,
+    min_floor: int = 15,
+) -> list[dict[str, Any]]:
+    """Build a training sample list that preserves natural within-category
+    answer-pattern proportions while ensuring every (category, answer_pattern)
+    bucket has at least `min_floor` samples (if available).
+
+    Designed in response to the uniform-stratified ablation: forcing 20/20/20/40
+    Yes/No/None/other within prediction broke the model's prior on DriveLM's
+    actual ~2/38/16/44 distribution. Proportional sampling preserves the prior;
+    the floor only kicks in for severely-underrepresented patterns.
+
+    Behavior is taken in full and upsampled `behavior_upsample`-fold.
+    """
+    rng = random.Random(seed)
+
+    usable: list[dict[str, Any]] = []
+    for sample in dataset.samples:
+        image_paths = sample.get("image_paths", {})
+        if not image_paths:
+            continue
+        if not any((nuscenes_dir / rel_path).exists() for rel_path in image_paths.values()):
+            continue
+        usable.append(sample)
+
+    buckets: dict[tuple[str, str], list[dict[str, Any]]] = {}
+    for s in usable:
+        key = (s["qa_type"], categorize_answer(s["answer"]))
+        buckets.setdefault(key, []).append(s)
+
+    selected: list[dict[str, Any]] = []
+    for cat in ("perception", "prediction", "planning"):
+        cat_buckets = {ans: buckets.get((cat, ans), []) for ans in ("Yes", "No", "None-pattern", "other")}
+        cat_total = sum(len(v) for v in cat_buckets.values())
+        if cat_total == 0:
+            continue
+
+        # First pass: proportional allocation.
+        raw_allocation = {ans: int(round(per_category * len(v) / cat_total)) for ans, v in cat_buckets.items()}
+
+        # Second pass: apply min-floor to non-empty buckets.
+        target = {}
+        for ans, count in raw_allocation.items():
+            available = len(cat_buckets[ans])
+            if available == 0:
+                target[ans] = 0
+                continue
+            target[ans] = max(min(count, available), min(min_floor, available))
+
+        # Third pass: trim or pad to hit per_category exactly without violating availability.
+        total = sum(target.values())
+        if total > per_category:
+            # Trim from the largest non-floor bucket
+            excess = total - per_category
+            order = sorted(target.keys(), key=lambda a: -target[a])
+            for ans in order:
+                if excess == 0:
+                    break
+                if target[ans] > min_floor:
+                    cut = min(excess, target[ans] - min_floor)
+                    target[ans] -= cut
+                    excess -= cut
+        elif total < per_category:
+            # Pad: distribute leftover to the bucket with the largest natural share with availability
+            short = per_category - total
+            order = sorted(cat_buckets.keys(), key=lambda a: -len(cat_buckets[a]))
+            for ans in order:
+                if short == 0:
+                    break
+                room = len(cat_buckets[ans]) - target[ans]
+                if room > 0:
+                    add = min(short, room)
+                    target[ans] += add
+                    short -= add
+
+        for ans, n in target.items():
+            if n:
+                selected.extend(rng.sample(cat_buckets[ans], n))
+
+    # Behavior: take all, upsample
+    behavior_samples: list[dict[str, Any]] = []
+    for ans in ("Yes", "No", "None-pattern", "other"):
+        behavior_samples.extend(buckets.get(("behavior", ans), []))
+    selected.extend(behavior_samples * max(1, behavior_upsample))
+
+    rng.shuffle(selected)
+    return selected
+
+
 if __name__ == "__main__":
     print("Initializing DriveLMDataset pipeline...")
     base_dir = Path(__file__).parent.parent.parent
