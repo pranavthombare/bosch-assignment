@@ -60,6 +60,8 @@ class TrainCfg:
     gradient_accumulation_steps: int = 2
     checkpoint_every: int = 200
     output_dir: Path = Path("models/qwen-lora")
+    stratified: bool = False
+    stratified_seed: int = 42
 
 
 @dataclass(frozen=True)

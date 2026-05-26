@@ -1,4 +1,5 @@
 import json
+import random
 from collections import Counter
 from pathlib import Path
 from typing import Any
@@ -133,6 +134,76 @@ class DriveLMDataset(Dataset):
             'frame_token': sample['frame_token'],
             'image_paths': sample['image_paths']
         }
+
+def categorize_answer(answer: str) -> str:
+    """Coarse classification of DriveLM ground-truth answers used by stratified sampling."""
+    a = answer.strip().lower().rstrip(".")
+    if a == "yes":
+        return "Yes"
+    if a == "no":
+        return "No"
+    if a in {"none", "none, no, none", "none, none, none"}:
+        return "None-pattern"
+    return "other"
+
+
+# Per-category × answer-type training plan. Targets were chosen to:
+#   * balance Yes/No within perception (which was 3.2:1 Yes-skewed in natural ordering)
+#   * give prediction/planning enough None-pattern coverage to learn the comma format
+#   * keep total non-behavior at ~750 so behavior at 4x upsample is a meaningful fraction
+STRATIFIED_PLAN: dict[str, dict[str, int]] = {
+    "perception": {"Yes": 50, "No": 50, "other": 150},
+    "prediction": {"Yes": 50, "No": 50, "None-pattern": 50, "other": 100},
+    "planning":   {"Yes": 50, "No": 50, "None-pattern": 25, "other": 125},
+}
+BEHAVIOR_UPSAMPLE = 4
+
+
+def stratified_samples(
+    dataset: "DriveLMDataset",
+    nuscenes_dir: Path,
+    seed: int = 42,
+    plan: dict[str, dict[str, int]] | None = None,
+    behavior_upsample: int = BEHAVIOR_UPSAMPLE,
+) -> list[dict[str, Any]]:
+    """Build a balanced training sample list addressing measured natural-distribution biases.
+
+    See `src/train/README.md` for the diagnosis this addresses. Returns a list of
+    sample dicts (with duplicates for behavior upsampling). Capped to availability
+    per (category, answer-type) bucket.
+    """
+    rng = random.Random(seed)
+    plan = plan if plan is not None else STRATIFIED_PLAN
+
+    usable = []
+    for sample in dataset.samples:
+        image_paths = sample.get("image_paths", {})
+        if not image_paths:
+            continue
+        if not any((nuscenes_dir / rel_path).exists() for rel_path in image_paths.values()):
+            continue
+        usable.append(sample)
+
+    buckets: dict[tuple[str, str], list[dict[str, Any]]] = {}
+    for s in usable:
+        key = (s["qa_type"], categorize_answer(s["answer"]))
+        buckets.setdefault(key, []).append(s)
+
+    selected: list[dict[str, Any]] = []
+    for cat, sub_plan in plan.items():
+        for ans_type, target in sub_plan.items():
+            available = buckets.get((cat, ans_type), [])
+            n = min(target, len(available))
+            selected.extend(rng.sample(available, n) if n else [])
+
+    behavior_samples: list[dict[str, Any]] = []
+    for ans_type in ("Yes", "No", "None-pattern", "other"):
+        behavior_samples.extend(buckets.get(("behavior", ans_type), []))
+    selected.extend(behavior_samples * max(1, behavior_upsample))
+
+    rng.shuffle(selected)
+    return selected
+
 
 if __name__ == "__main__":
     print("Initializing DriveLMDataset pipeline...")

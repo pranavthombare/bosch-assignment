@@ -6,7 +6,7 @@ from peft import LoraConfig, TaskType, get_peft_model, prepare_model_for_kbit_tr
 
 sys.path.append(str(Path(__file__).parent.parent.parent))
 from src.config import RunCfg, load_config, print_config
-from src.data.pipeline import DriveLMDataset
+from src.data.pipeline import DriveLMDataset, stratified_samples
 from src.eval.eval import first_valid_samples
 from src.qwen import (
     apply_qwen_chat_template,
@@ -103,8 +103,12 @@ def run(cfg: RunCfg) -> None:
 
     print("Loading DriveLM Dataset...")
     dataset = DriveLMDataset(str(cfg.data.nuscenes_dir), str(cfg.data.drivelm_json))
-    train_samples = first_valid_samples(dataset, cfg.train.num_samples, cfg.data.nuscenes_dir)
-    print(f"Training on {len(train_samples)} samples...")
+    if cfg.train.stratified:
+        train_samples = stratified_samples(dataset, cfg.data.nuscenes_dir, seed=cfg.train.stratified_seed)
+        print(f"Training on {len(train_samples)} stratified samples (seed={cfg.train.stratified_seed})...")
+    else:
+        train_samples = first_valid_samples(dataset, cfg.train.num_samples, cfg.data.nuscenes_dir)
+        print(f"Training on {len(train_samples)} natural-distribution samples...")
 
     model.train()
     optimizer = torch.optim.AdamW((p for p in model.parameters() if p.requires_grad), lr=cfg.train.lr)
