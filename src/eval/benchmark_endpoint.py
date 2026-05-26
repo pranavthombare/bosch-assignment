@@ -9,7 +9,7 @@ import sys
 import time
 from pathlib import Path
 
-import httpx
+from openai import AsyncOpenAI
 
 sys.path.append(str(Path(__file__).parent.parent.parent))
 from src.data.pipeline import DriveLMDataset
@@ -17,8 +17,14 @@ from src.eval.benchmark import compute_text_metrics, first_valid_samples
 from src.serve.qwen import DEFAULT_QWEN_MODEL_ID, load_image, select_image_paths
 
 
+SYSTEM_TEXT = (
+    "You are answering autonomous-driving visual questions from synchronized "
+    "nuScenes camera views. Use the camera labels when spatial context matters."
+)
+
+
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Benchmark Qwen through any OpenAI-compatible endpoint.")
+    parser = argparse.ArgumentParser(description="Benchmark Qwen through an OpenAI-compatible chat-completions endpoint.")
     parser.add_argument("--model-id", default=DEFAULT_QWEN_MODEL_ID)
     parser.add_argument("--base-url", default="http://127.0.0.1:8001/v1")
     parser.add_argument("--api-key", default="local")
@@ -31,6 +37,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--temperature", type=float, default=0.0)
     parser.add_argument("--concurrency", type=int, default=8)
     parser.add_argument("--timeout", type=int, default=180)
+    parser.add_argument("--max-retries", type=int, default=3)
     parser.add_argument("--output-json", type=Path, default=Path("artifacts/qwen_endpoint_results.json"))
     return parser.parse_args()
 
@@ -42,20 +49,12 @@ def image_to_data_url(path: Path, max_long_edge: int | None) -> str:
     return "data:image/jpeg;base64," + base64.b64encode(buffer.getvalue()).decode("ascii")
 
 
-def build_openai_messages(
+def build_chat_messages(
     selected_images: list[tuple[str, Path]],
     question: str,
     image_long_edge: int | None,
 ) -> list[dict]:
-    content: list[dict] = [
-        {
-            "type": "text",
-            "text": (
-                "You are answering autonomous-driving visual questions from synchronized "
-                "nuScenes camera views. Use the camera labels when spatial context matters."
-            ),
-        }
-    ]
+    content: list[dict] = [{"type": "text", "text": SYSTEM_TEXT}]
     for camera, path in selected_images:
         content.append({"type": "text", "text": f"Camera view: {camera}"})
         content.append({"type": "image_url", "image_url": {"url": image_to_data_url(path, image_long_edge)}})
@@ -63,24 +62,14 @@ def build_openai_messages(
     return [{"role": "user", "content": content}]
 
 
-async def call_endpoint(
-    client: httpx.AsyncClient,
-    semaphore: asyncio.Semaphore,
-    base_url: str,
-    payload: dict,
-    timeout: int,
-) -> tuple[str, float]:
-    async with semaphore:
-        start = time.perf_counter()
-        response = await client.post(
-            base_url.rstrip("/") + "/chat/completions",
-            json=payload,
-            timeout=timeout,
-        )
-        response.raise_for_status()
-        latency_ms = (time.perf_counter() - start) * 1000
-        data = response.json()
-        return data["choices"][0]["message"]["content"].strip(), latency_ms
+async def call_chat(client: AsyncOpenAI, args, messages) -> str:
+    response = await client.chat.completions.create(
+        model=args.model_id,
+        messages=messages,
+        max_tokens=args.max_new_tokens,
+        temperature=args.temperature,
+    )
+    return response.choices[0].message.content.strip()
 
 
 async def run(args: argparse.Namespace) -> None:
@@ -89,46 +78,49 @@ async def run(args: argparse.Namespace) -> None:
     print("Loading DriveLM Dataset...")
     dataset = DriveLMDataset(str(args.nuscenes_dir), str(args.drivelm_json))
     test_samples = first_valid_samples(dataset, args.num_samples, args.nuscenes_dir)
-    print(f"Running endpoint benchmark on {len(test_samples)} samples with concurrency={args.concurrency}...")
+    print(f"Running endpoint benchmark on {len(test_samples)} samples (concurrency={args.concurrency})...")
 
-    headers = {"Authorization": f"Bearer {args.api_key}"}
+    client = AsyncOpenAI(
+        base_url=args.base_url,
+        api_key=args.api_key,
+        timeout=args.timeout,
+        max_retries=args.max_retries,
+    )
     semaphore = asyncio.Semaphore(args.concurrency)
     predictions: list[str | None] = [None] * len(test_samples)
     latencies_ms: list[float] = [0.0] * len(test_samples)
-    selected_cams: list[list[str]] = [[]] * len(test_samples)
+    selected_cams: list[list[str]] = [[] for _ in test_samples]
     errors: list[str | None] = [None] * len(test_samples)
 
-    async with httpx.AsyncClient(headers=headers) as client:
+    async def process(index: int, sample: dict) -> None:
+        try:
+            selected = select_image_paths(
+                image_paths=sample["image_paths"],
+                camera_mode=args.camera_mode,
+                nuscenes_root=args.nuscenes_dir,
+            )
+            if not selected:
+                raise RuntimeError("No usable image paths.")
+            selected_cams[index] = [camera for camera, _ in selected]
 
-        async def process(index: int, sample: dict) -> None:
-            try:
-                selected = select_image_paths(
-                    image_paths=sample["image_paths"],
-                    camera_mode=args.camera_mode,
-                    nuscenes_root=args.nuscenes_dir,
-                )
-                if not selected:
-                    raise RuntimeError("No usable image paths.")
-                payload = {
-                    "model": args.model_id,
-                    "messages": build_openai_messages(selected, sample["question"], image_long_edge),
-                    "max_tokens": args.max_new_tokens,
-                    "temperature": args.temperature,
-                }
-                prediction, latency_ms = await call_endpoint(client, semaphore, args.base_url, payload, args.timeout)
-                predictions[index] = prediction
-                latencies_ms[index] = latency_ms
-                selected_cams[index] = [camera for camera, _ in selected]
-            except Exception as exc:
-                errors[index] = f"{type(exc).__name__}: {exc}"
+            async with semaphore:
+                messages = build_chat_messages(selected, sample["question"], image_long_edge)
+                start = time.perf_counter()
+                prediction = await call_chat(client, args, messages)
+                latency_ms = (time.perf_counter() - start) * 1000
 
-        tasks = [process(i, s) for i, s in enumerate(test_samples)]
-        completed = 0
-        for coro in asyncio.as_completed(tasks):
-            await coro
-            completed += 1
-            if completed % 50 == 0 or completed == len(tasks):
-                print(f"Completed {completed}/{len(tasks)}", flush=True)
+            predictions[index] = prediction
+            latencies_ms[index] = latency_ms
+        except Exception as exc:
+            errors[index] = f"{type(exc).__name__}: {exc}"
+
+    tasks = [process(i, s) for i, s in enumerate(test_samples)]
+    completed = 0
+    for coro in asyncio.as_completed(tasks):
+        await coro
+        completed += 1
+        if completed % 50 == 0 or completed == len(tasks):
+            print(f"Completed {completed}/{len(tasks)}", flush=True)
 
     records = []
     finals_pred: list[str] = []
