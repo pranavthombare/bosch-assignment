@@ -1,0 +1,275 @@
+{
+  "source": "artifacts/baseline_front_arc_full.json",
+  "model_id": "Qwen/Qwen3.5-0.8B",
+  "camera_mode": "front-arc",
+  "per_category": {
+    "perception": {
+      "n": 1738,
+      "wins": [
+        {
+          "rouge_l": 1.0,
+          "id": "c0f7a7d51fbe46f9be8ca098da06b7fb",
+          "question_type": "perception",
+          "question": "Are there bicycles without riders to the back of the ego car?",
+          "reference": "No.",
+          "prediction": "No.",
+          "selected_cameras": [
+            "CAM_FRONT_LEFT",
+            "CAM_FRONT",
+            "CAM_FRONT_RIGHT"
+          ],
+          "latency_ms": 676.47,
+          "error": null
+        },
+        {
+          "rouge_l": 1.0,
+          "id": "c0f7a7d51fbe46f9be8ca098da06b7fb",
+          "question_type": "perception",
+          "question": "Are there motorcycles with riders to the back left of the ego car?",
+          "reference": "No.",
+          "prediction": "No.",
+          "selected_cameras": [
+            "CAM_FRONT_LEFT",
+            "CAM_FRONT",
+            "CAM_FRONT_RIGHT"
+          ],
+          "latency_ms": 645.22,
+          "error": null
+        }
+      ],
+      "losses": [
+        {
+          "rouge_l": 0.0,
+          "id": "c0f7a7d51fbe46f9be8ca098da06b7fb",
+          "question_type": "perception",
+          "question": "Are there moving cars to the front of the ego car?",
+          "reference": "Yes.",
+          "prediction": "No, there are no moving cars to the front of the ego car.",
+          "selected_cameras": [
+            "CAM_FRONT_LEFT",
+            "CAM_FRONT",
+            "CAM_FRONT_RIGHT"
+          ],
+          "latency_ms": 1388.79,
+          "error": null
+        },
+        {
+          "rouge_l": 0.0,
+          "id": "c0f7a7d51fbe46f9be8ca098da06b7fb",
+          "question_type": "perception",
+          "question": "Are there moving cars to the back right of the ego car?",
+          "reference": "Yes.",
+          "prediction": "No, there are no moving cars to the back right of the ego car.",
+          "selected_cameras": [
+            "CAM_FRONT_LEFT",
+            "CAM_FRONT",
+            "CAM_FRONT_RIGHT"
+          ],
+          "latency_ms": 1553.67,
+          "error": null
+        }
+      ]
+    },
+    "prediction": {
+      "n": 1181,
+      "wins": [
+        {
+          "rouge_l": 1.0,
+          "id": "3b594831ff7f4e27a9889c7b7d0d8e92",
+          "question_type": "prediction",
+          "question": "What kind of traffic sign is <c5,CAM_FRONT_LEFT,1238.5,185.9>?",
+          "reference": "Traffic light.",
+          "prediction": "Traffic light.",
+          "selected_cameras": [
+            "CAM_FRONT_LEFT",
+            "CAM_FRONT",
+            "CAM_FRONT_RIGHT"
+          ],
+          "latency_ms": 378.63,
+          "error": null
+        },
+        {
+          "rouge_l": 0.8,
+          "id": "00889f8a9549450aa2f32cf310a3e305",
+          "question_type": "prediction",
+          "question": "What kind of traffic sign is <c6,CAM_FRONT,1069.5,296.3>?",
+          "reference": "Traffic light.",
+          "prediction": "A traffic light.",
+          "selected_cameras": [
+            "CAM_FRONT_LEFT",
+            "CAM_FRONT",
+            "CAM_FRONT_RIGHT"
+          ],
+          "latency_ms": 385.15,
+          "error": null
+        }
+      ],
+      "losses": [
+        {
+          "rouge_l": 0.0,
+          "id": "c0f7a7d51fbe46f9be8ca098da06b7fb",
+          "question_type": "prediction",
+          "question": "Which object is most likely to be occluded by <c1,CAM_FRONT_RIGHT,611.7,540.0>? Would this object affect the ego vehicle? Based on this object, what action of the ego vehicle is dangerous?",
+          "reference": "None, no, none.",
+          "prediction": "The object is likely a car, and it would affect the ego vehicle by potentially causing a collision.",
+          "selected_cameras": [
+            "CAM_FRONT_LEFT",
+            "CAM_FRONT",
+            "CAM_FRONT_RIGHT"
+          ],
+          "latency_ms": 1657.75,
+          "error": null
+        },
+        {
+          "rouge_l": 0.0,
+          "id": "c0f7a7d51fbe46f9be8ca098da06b7fb",
+          "question_type": "prediction",
+          "question": "What is the future state of <c1,CAM_FRONT_RIGHT,611.7,540.0>?",
+          "reference": "Keep going straight.",
+          "prediction": "The car is moving forward.",
+          "selected_cameras": [
+            "CAM_FRONT_LEFT",
+            "CAM_FRONT",
+            "CAM_FRONT_RIGHT"
+          ],
+          "latency_ms": 626.47,
+          "error": null
+        }
+      ]
+    },
+    "planning": {
+      "n": 813,
+      "wins": [
+        {
+          "rouge_l": 0.5714285714285715,
+          "id": "d7cb9aa06de1442d8e2a22d562045cb4",
+          "question_type": "planning",
+          "question": "What does the traffic sign mean?",
+          "reference": "Stop sign.",
+          "prediction": "It is a stop sign.",
+          "selected_cameras": [
+            "CAM_FRONT_LEFT",
+            "CAM_FRONT",
+            "CAM_FRONT_RIGHT"
+          ],
+          "latency_ms": 786.12,
+          "error": null
+        },
+        {
+          "rouge_l": 0.4545454545454546,
+          "id": "8c0372d87281421aba897bec0084d0da",
+          "question_type": "planning",
+          "question": "What is the target action of the ego vehicle?",
+          "reference": "The ego vehicle's target action is to brake gently to a stop.",
+          "prediction": "The ego vehicle is driving through a construction site.",
+          "selected_cameras": [
+            "CAM_FRONT_LEFT",
+            "CAM_FRONT",
+            "CAM_FRONT_RIGHT"
+          ],
+          "latency_ms": 1580.32,
+          "error": null
+        }
+      ],
+      "losses": [
+        {
+          "rouge_l": 0.0,
+          "id": "c0f7a7d51fbe46f9be8ca098da06b7fb",
+          "question_type": "planning",
+          "question": "What actions taken by the ego vehicle can lead to a collision with <c1,CAM_FRONT_RIGHT,611.7,540.0>?",
+          "reference": "No such action will lead to a collision.",
+          "prediction": "The car in the right lane is moving towards the ego vehicle.",
+          "selected_cameras": [
+            "CAM_FRONT_LEFT",
+            "CAM_FRONT",
+            "CAM_FRONT_RIGHT"
+          ],
+          "latency_ms": 1543.23,
+          "error": null
+        },
+        {
+          "rouge_l": 0.0,
+          "id": "c0f7a7d51fbe46f9be8ca098da06b7fb",
+          "question_type": "planning",
+          "question": "What actions taken by the ego vehicle can lead to a collision with <c3,CAM_FRONT,843.3,526.7>?",
+          "reference": "Accelerating and going straight.",
+          "prediction": "The car ahead in the lane to the right is moving too fast.",
+          "selected_cameras": [
+            "CAM_FRONT_LEFT",
+            "CAM_FRONT",
+            "CAM_FRONT_RIGHT"
+          ],
+          "latency_ms": 1547.65,
+          "error": null
+        }
+      ]
+    },
+    "behavior": {
+      "n": 38,
+      "wins": [
+        {
+          "rouge_l": 0.4444444444444444,
+          "id": "ed1eee39e3dd4c30a3d932e3ceaa92c2",
+          "question_type": "behavior",
+          "question": "Predict the behavior of the ego vehicle.",
+          "reference": "The ego vehicle is going straight. The ego vehicle is driving fast.",
+          "prediction": "The ego vehicle will continue straight.",
+          "selected_cameras": [
+            "CAM_FRONT_LEFT",
+            "CAM_FRONT",
+            "CAM_FRONT_RIGHT"
+          ],
+          "latency_ms": 943.19,
+          "error": null
+        },
+        {
+          "rouge_l": 0.4444444444444444,
+          "id": "23799328f65843fc9e0c71f2bfbe90ef",
+          "question_type": "behavior",
+          "question": "Predict the behavior of the ego vehicle.",
+          "reference": "The ego vehicle is going straight. The ego vehicle is driving fast.",
+          "prediction": "The ego vehicle will continue straight.",
+          "selected_cameras": [
+            "CAM_FRONT_LEFT",
+            "CAM_FRONT",
+            "CAM_FRONT_RIGHT"
+          ],
+          "latency_ms": 1181.96,
+          "error": null
+        }
+      ],
+      "losses": [
+        {
+          "rouge_l": 0.21621621621621623,
+          "id": "348c8122f47349429a6cd694dcac86e6",
+          "question_type": "behavior",
+          "question": "Predict the behavior of the ego vehicle.",
+          "reference": "The ego vehicle is going straight. The ego vehicle is not moving.",
+          "prediction": "The ego vehicle will likely need to slow down and prepare to stop, as indicated by the pedestrian signal and the presence of a pedestrian.",
+          "selected_cameras": [
+            "CAM_FRONT_LEFT",
+            "CAM_FRONT",
+            "CAM_FRONT_RIGHT"
+          ],
+          "latency_ms": 2725.15,
+          "error": null
+        },
+        {
+          "rouge_l": 0.2608695652173913,
+          "id": "1e3d79dae62742a0ad64c91679863358",
+          "question_type": "behavior",
+          "question": "Predict the behavior of the ego vehicle.",
+          "reference": "The ego vehicle is slightly steering to the left. The ego vehicle is driving with normal speed.",
+          "prediction": "The ego vehicle will continue straight.",
+          "selected_cameras": [
+            "CAM_FRONT_LEFT",
+            "CAM_FRONT",
+            "CAM_FRONT_RIGHT"
+          ],
+          "latency_ms": 1190.53,
+          "error": null
+        }
+      ]
+    }
+  }
+}

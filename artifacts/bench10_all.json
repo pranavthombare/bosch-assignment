@@ -1,0 +1,177 @@
+{
+  "model_id": "Qwen/Qwen3.5-0.8B",
+  "camera_mode": "all",
+  "num_samples": 10,
+  "rouge": {
+    "metric_backend": "fallback: ImportError: cannot import name 'HfFolder' from 'huggingface_hub' (/home/pranavthombare/personal/bosch/.venv/lib/python3.11/site-packages/huggingface_hub/__init__.py)",
+    "exact_match": 0.0,
+    "token_f1": 0.1708321090674032
+  },
+  "latency": {
+    "mean_ms": 12011.46,
+    "min_ms": 11631.85,
+    "max_ms": 13108.07
+  },
+  "records": [
+    {
+      "id": "c0f7a7d51fbe46f9be8ca098da06b7fb",
+      "question_type": "perception",
+      "question": "What are objects to the back of the ego car?",
+      "reference": "There are many cars behind the ego car.",
+      "prediction": "Several cars are visible in the background, including a blue car on the left and a dark vehicle further back.",
+      "selected_cameras": [
+        "CAM_FRONT_LEFT",
+        "CAM_FRONT",
+        "CAM_FRONT_RIGHT",
+        "CAM_BACK_LEFT",
+        "CAM_BACK",
+        "CAM_BACK_RIGHT"
+      ],
+      "latency_ms": 13108.07
+    },
+    {
+      "id": "c0f7a7d51fbe46f9be8ca098da06b7fb",
+      "question_type": "perception",
+      "question": "What is the status of the cars that are to the back of the ego car?",
+      "reference": "Many cars are moving, and two are parked.",
+      "prediction": "The cars are moving away from the ego car.",
+      "selected_cameras": [
+        "CAM_FRONT_LEFT",
+        "CAM_FRONT",
+        "CAM_FRONT_RIGHT",
+        "CAM_BACK_LEFT",
+        "CAM_BACK",
+        "CAM_BACK_RIGHT"
+      ],
+      "latency_ms": 12103.35
+    },
+    {
+      "id": "c0f7a7d51fbe46f9be8ca098da06b7fb",
+      "question_type": "perception",
+      "question": "What are objects to the front of the ego car?",
+      "reference": "There are many cars in front of the ego car.",
+      "prediction": "Cars",
+      "selected_cameras": [
+        "CAM_FRONT_LEFT",
+        "CAM_FRONT",
+        "CAM_FRONT_RIGHT",
+        "CAM_BACK_LEFT",
+        "CAM_BACK",
+        "CAM_BACK_RIGHT"
+      ],
+      "latency_ms": 11738.51
+    },
+    {
+      "id": "c0f7a7d51fbe46f9be8ca098da06b7fb",
+      "question_type": "perception",
+      "question": "What is the status of the cars that are to the front of the ego car?",
+      "reference": "Many cars are moving.",
+      "prediction": "The cars are moving away from the ego car.",
+      "selected_cameras": [
+        "CAM_FRONT_LEFT",
+        "CAM_FRONT",
+        "CAM_FRONT_RIGHT",
+        "CAM_BACK_LEFT",
+        "CAM_BACK",
+        "CAM_BACK_RIGHT"
+      ],
+      "latency_ms": 12119.68
+    },
+    {
+      "id": "c0f7a7d51fbe46f9be8ca098da06b7fb",
+      "question_type": "perception",
+      "question": "What are objects to the front right of the ego car?",
+      "reference": "There are two cars to the front right of the ego car.",
+      "prediction": "Cars",
+      "selected_cameras": [
+        "CAM_FRONT_LEFT",
+        "CAM_FRONT",
+        "CAM_FRONT_RIGHT",
+        "CAM_BACK_LEFT",
+        "CAM_BACK",
+        "CAM_BACK_RIGHT"
+      ],
+      "latency_ms": 11705.55
+    },
+    {
+      "id": "c0f7a7d51fbe46f9be8ca098da06b7fb",
+      "question_type": "perception",
+      "question": "What is the status of the cars that are to the front right of the ego car?",
+      "reference": "Two cars are moving.",
+      "prediction": "The cars are moving away from the ego car.",
+      "selected_cameras": [
+        "CAM_FRONT_LEFT",
+        "CAM_FRONT",
+        "CAM_FRONT_RIGHT",
+        "CAM_BACK_LEFT",
+        "CAM_BACK",
+        "CAM_BACK_RIGHT"
+      ],
+      "latency_ms": 12101.41
+    },
+    {
+      "id": "c0f7a7d51fbe46f9be8ca098da06b7fb",
+      "question_type": "perception",
+      "question": "What are objects to the back right of the ego car?",
+      "reference": "There are two cars to the back right of the ego car.",
+      "prediction": "A blue car",
+      "selected_cameras": [
+        "CAM_FRONT_LEFT",
+        "CAM_FRONT",
+        "CAM_FRONT_RIGHT",
+        "CAM_BACK_LEFT",
+        "CAM_BACK",
+        "CAM_BACK_RIGHT"
+      ],
+      "latency_ms": 11830.32
+    },
+    {
+      "id": "c0f7a7d51fbe46f9be8ca098da06b7fb",
+      "question_type": "perception",
+      "question": "What is the status of the cars that are to the back right of the ego car?",
+      "reference": "Two cars are moving.",
+      "prediction": "The cars are moving away from the ego car.",
+      "selected_cameras": [
+        "CAM_FRONT_LEFT",
+        "CAM_FRONT",
+        "CAM_FRONT_RIGHT",
+        "CAM_BACK_LEFT",
+        "CAM_BACK",
+        "CAM_BACK_RIGHT"
+      ],
+      "latency_ms": 12137.47
+    },
+    {
+      "id": "c0f7a7d51fbe46f9be8ca098da06b7fb",
+      "question_type": "perception",
+      "question": "Are there parked trucks to the front right of the ego car?",
+      "reference": "No.",
+      "prediction": "No",
+      "selected_cameras": [
+        "CAM_FRONT_LEFT",
+        "CAM_FRONT",
+        "CAM_FRONT_RIGHT",
+        "CAM_BACK_LEFT",
+        "CAM_BACK",
+        "CAM_BACK_RIGHT"
+      ],
+      "latency_ms": 11631.85
+    },
+    {
+      "id": "c0f7a7d51fbe46f9be8ca098da06b7fb",
+      "question_type": "perception",
+      "question": "Are there moving construction vehicles to the front right of the ego car?",
+      "reference": "No.",
+      "prediction": "No",
+      "selected_cameras": [
+        "CAM_FRONT_LEFT",
+        "CAM_FRONT",
+        "CAM_FRONT_RIGHT",
+        "CAM_BACK_LEFT",
+        "CAM_BACK",
+        "CAM_BACK_RIGHT"
+      ],
+      "latency_ms": 11638.43
+    }
+  ]
+}

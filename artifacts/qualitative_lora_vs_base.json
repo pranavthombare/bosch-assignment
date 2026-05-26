@@ -1,0 +1,206 @@
+{
+  "perception": {
+    "wins": [
+      {
+        "category": "perception",
+        "frame_token": "c0f7a7d51fbe46f9be8ca098da06b7fb",
+        "question": "Are there moving cars to the front of the ego car?",
+        "reference": "Yes.",
+        "baseline_prediction": "No, there are no moving cars to the front of the ego car.",
+        "baseline_rougeL": 0.0,
+        "lora_prediction": "Yes.",
+        "lora_rougeL": 1.0,
+        "delta": 1.0
+      },
+      {
+        "category": "perception",
+        "frame_token": "c0f7a7d51fbe46f9be8ca098da06b7fb",
+        "question": "Are there moving cars to the back right of the ego car?",
+        "reference": "Yes.",
+        "baseline_prediction": "No, there are no moving cars to the back right of the ego car.",
+        "baseline_rougeL": 0.0,
+        "lora_prediction": "Yes.",
+        "lora_rougeL": 1.0,
+        "delta": 1.0
+      }
+    ],
+    "losses": [
+      {
+        "category": "perception",
+        "frame_token": "c0f7a7d51fbe46f9be8ca098da06b7fb",
+        "question": "Are there bicycles without riders to the back of the ego car?",
+        "reference": "No.",
+        "baseline_prediction": "No.",
+        "baseline_rougeL": 1.0,
+        "lora_prediction": "Yes.",
+        "lora_rougeL": 0.0,
+        "delta": -1.0
+      },
+      {
+        "category": "perception",
+        "frame_token": "c0f7a7d51fbe46f9be8ca098da06b7fb",
+        "question": "Are there motorcycles with riders to the back left of the ego car?",
+        "reference": "No.",
+        "baseline_prediction": "No.",
+        "baseline_rougeL": 1.0,
+        "lora_prediction": "Yes.",
+        "lora_rougeL": 0.0,
+        "delta": -1.0
+      }
+    ],
+    "n_paired": 1738
+  },
+  "prediction": {
+    "wins": [
+      {
+        "category": "prediction",
+        "frame_token": "c0f7a7d51fbe46f9be8ca098da06b7fb",
+        "question": "Which object is most likely to be occluded by <c1,CAM_FRONT_RIGHT,611.7,540.0>? Would this object affect the ego vehicle? Based on this object, what action of the ego vehicle is dangerous?",
+        "reference": "None, no, none.",
+        "baseline_prediction": "The object is likely a car, and it would affect the ego vehicle by potentially causing a collision.",
+        "baseline_rougeL": 0.0,
+        "lora_prediction": "None, no, none.",
+        "lora_rougeL": 1.0,
+        "delta": 1.0
+      },
+      {
+        "category": "prediction",
+        "frame_token": "c0f7a7d51fbe46f9be8ca098da06b7fb",
+        "question": "Which object is most likely to be occluded by <c2,CAM_FRONT,978.3,490.8>? Would this object affect the ego vehicle? Based on this object, what action of the ego vehicle is dangerous?",
+        "reference": "None, no, none.",
+        "baseline_prediction": "The object is likely a car, and it would affect the ego vehicle by potentially causing a collision.",
+        "baseline_rougeL": 0.0,
+        "lora_prediction": "None, no, none.",
+        "lora_rougeL": 1.0,
+        "delta": 1.0
+      }
+    ],
+    "losses": [
+      {
+        "category": "prediction",
+        "frame_token": "3b594831ff7f4e27a9889c7b7d0d8e92",
+        "question": "What kind of traffic sign is <c5,CAM_FRONT_LEFT,1238.5,185.9>?",
+        "reference": "Traffic light.",
+        "baseline_prediction": "Traffic light.",
+        "baseline_rougeL": 1.0,
+        "lora_prediction": "None.",
+        "lora_rougeL": 0.0,
+        "delta": -1.0
+      },
+      {
+        "category": "prediction",
+        "frame_token": "00889f8a9549450aa2f32cf310a3e305",
+        "question": "What kind of traffic sign is <c6,CAM_FRONT,1069.5,296.3>?",
+        "reference": "Traffic light.",
+        "baseline_prediction": "A traffic light.",
+        "baseline_rougeL": 0.8,
+        "lora_prediction": "None.",
+        "lora_rougeL": 0.0,
+        "delta": -0.8
+      }
+    ],
+    "n_paired": 1111
+  },
+  "planning": {
+    "wins": [
+      {
+        "category": "planning",
+        "frame_token": "c0f7a7d51fbe46f9be8ca098da06b7fb",
+        "question": "What is the traffic signal that the ego vehicle should pay attention to?",
+        "reference": "None.",
+        "baseline_prediction": "There is no traffic signal visible in the image.",
+        "baseline_rougeL": 0.0,
+        "lora_prediction": "None.",
+        "lora_rougeL": 1.0,
+        "delta": 1.0
+      },
+      {
+        "category": "planning",
+        "frame_token": "e8b1863300964b2481fee312496d06d8",
+        "question": "What is the traffic signal that the ego vehicle should pay attention to?",
+        "reference": "None.",
+        "baseline_prediction": "There is no traffic signal visible in the image.",
+        "baseline_rougeL": 0.0,
+        "lora_prediction": "None.",
+        "lora_rougeL": 1.0,
+        "delta": 1.0
+      }
+    ],
+    "losses": [
+      {
+        "category": "planning",
+        "frame_token": "d7cb9aa06de1442d8e2a22d562045cb4",
+        "question": "What does the traffic sign mean?",
+        "reference": "Stop sign.",
+        "baseline_prediction": "It is a stop sign.",
+        "baseline_rougeL": 0.5714285714285715,
+        "lora_prediction": "None.",
+        "lora_rougeL": 0.0,
+        "delta": -0.5714285714285715
+      },
+      {
+        "category": "planning",
+        "frame_token": "8c0372d87281421aba897bec0084d0da",
+        "question": "What is the target action of the ego vehicle?",
+        "reference": "The ego vehicle's target action is to brake gently to a stop.",
+        "baseline_prediction": "The ego vehicle is driving through a construction site.",
+        "baseline_rougeL": 0.4545454545454546,
+        "lora_prediction": "Go ahead.",
+        "lora_rougeL": 0.0,
+        "delta": -0.4545454545454546
+      }
+    ],
+    "n_paired": 811
+  },
+  "behavior": {
+    "wins": [
+      {
+        "category": "behavior",
+        "frame_token": "1e3d79dae62742a0ad64c91679863358",
+        "question": "Predict the behavior of the ego vehicle.",
+        "reference": "The ego vehicle is slightly steering to the left. The ego vehicle is driving with normal speed.",
+        "baseline_prediction": "The ego vehicle will continue straight.",
+        "baseline_rougeL": 0.2608695652173913,
+        "lora_prediction": "Turn left.",
+        "lora_rougeL": 0.10526315789473684,
+        "delta": -0.15560640732265446
+      },
+      {
+        "category": "behavior",
+        "frame_token": "88449a5cb1644a199c1c11f6ac034867",
+        "question": "Predict the behavior of the ego vehicle.",
+        "reference": "The ego vehicle is steering to the left. The ego vehicle is driving slowly.",
+        "baseline_prediction": "The ego vehicle will continue straight.",
+        "baseline_rougeL": 0.3,
+        "lora_prediction": "Turn left.",
+        "lora_rougeL": 0.125,
+        "delta": -0.175
+      }
+    ],
+    "losses": [
+      {
+        "category": "behavior",
+        "frame_token": "ed1eee39e3dd4c30a3d932e3ceaa92c2",
+        "question": "Predict the behavior of the ego vehicle.",
+        "reference": "The ego vehicle is going straight. The ego vehicle is driving fast.",
+        "baseline_prediction": "The ego vehicle will continue straight.",
+        "baseline_rougeL": 0.4444444444444444,
+        "lora_prediction": "Turn left.",
+        "lora_rougeL": 0.0,
+        "delta": -0.4444444444444444
+      },
+      {
+        "category": "behavior",
+        "frame_token": "61cfc5554a724824b0d34bddc147d890",
+        "question": "Predict the behavior of the ego vehicle.",
+        "reference": "The ego vehicle is going straight. The ego vehicle is not moving.",
+        "baseline_prediction": "The ego vehicle will continue straight.",
+        "baseline_rougeL": 0.4444444444444444,
+        "lora_prediction": "Turn left.",
+        "lora_rougeL": 0.0,
+        "delta": -0.4444444444444444
+      }
+    ],
+    "n_paired": 38
+  }
+}

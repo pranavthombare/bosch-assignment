@@ -1,0 +1,33 @@
+{
+  "model_id": "Qwen/Qwen3.5-0.8B",
+  "camera_mode": "all",
+  "num_samples": 1,
+  "rouge": {
+    "metric_backend": "fallback: ImportError: cannot import name 'HfFolder' from 'huggingface_hub' (/home/pranavthombare/personal/bosch/.venv/lib/python3.11/site-packages/huggingface_hub/__init__.py)",
+    "exact_match": 0.0,
+    "token_f1": 0.21428571428571425
+  },
+  "latency": {
+    "mean_ms": 13256.35,
+    "min_ms": 13256.35,
+    "max_ms": 13256.35
+  },
+  "records": [
+    {
+      "id": "c0f7a7d51fbe46f9be8ca098da06b7fb",
+      "question_type": "perception",
+      "question": "What are objects to the back of the ego car?",
+      "reference": "There are many cars behind the ego car.",
+      "prediction": "Several cars are visible in the background, including a blue car on the left and a dark vehicle further back.",
+      "selected_cameras": [
+        "CAM_FRONT_LEFT",
+        "CAM_FRONT",
+        "CAM_FRONT_RIGHT",
+        "CAM_BACK_LEFT",
+        "CAM_BACK",
+        "CAM_BACK_RIGHT"
+      ],
+      "latency_ms": 13256.35
+    }
+  ]
+}

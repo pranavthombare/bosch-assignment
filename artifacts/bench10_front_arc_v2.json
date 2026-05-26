@@ -1,0 +1,150 @@
+{
+  "model_id": "Qwen/Qwen3.5-0.8B",
+  "camera_mode": "front-arc",
+  "num_samples": 10,
+  "rouge": {
+    "metric_backend": "rouge_score",
+    "rouge1": 0.19616021970340064,
+    "rouge2": 0.10566287790447508,
+    "rougeL": 0.17969112500337375,
+    "exact_match": 0.0,
+    "token_f1": 0.14177135433627025
+  },
+  "latency": {
+    "mean_ms": 8126.22,
+    "min_ms": 6520.1,
+    "max_ms": 9587.77
+  },
+  "records": [
+    {
+      "id": "c0f7a7d51fbe46f9be8ca098da06b7fb",
+      "question_type": "perception",
+      "question": "What are objects to the back of the ego car?",
+      "reference": "There are many cars behind the ego car.",
+      "prediction": "Based on the camera view labeled **CAM_FRONT**, the scene depicts a nighttime urban environment. The ego car is driving on a multi-lane road, illuminated by streetlights.\n\nLooking at the objects in the scene:\n\n- **In the center of the lane ahead**: There is a red car with its brake lights",
+      "selected_cameras": [
+        "CAM_FRONT_LEFT",
+        "CAM_FRONT",
+        "CAM_FRONT_RIGHT"
+      ],
+      "latency_ms": 9033.2
+    },
+    {
+      "id": "c0f7a7d51fbe46f9be8ca098da06b7fb",
+      "question_type": "perception",
+      "question": "What is the status of the cars that are to the back of the ego car?",
+      "reference": "Many cars are moving, and two are parked.",
+      "prediction": "The cars that are to the back of the ego car are in motion.",
+      "selected_cameras": [
+        "CAM_FRONT_LEFT",
+        "CAM_FRONT",
+        "CAM_FRONT_RIGHT"
+      ],
+      "latency_ms": 6840.67
+    },
+    {
+      "id": "c0f7a7d51fbe46f9be8ca098da06b7fb",
+      "question_type": "perception",
+      "question": "What are objects to the front of the ego car?",
+      "reference": "There are many cars in front of the ego car.",
+      "prediction": "Based on the camera view labeled **CAM_FRONT**, the scene depicts a nighttime urban environment. The primary objects in the foreground are the road surface itself, which appears as a dark, textured patch at the bottom of the frame.\n\nThe objects **to the front** of the ego car (the camera's forward-facing view",
+      "selected_cameras": [
+        "CAM_FRONT_LEFT",
+        "CAM_FRONT",
+        "CAM_FRONT_RIGHT"
+      ],
+      "latency_ms": 9359.89
+    },
+    {
+      "id": "c0f7a7d51fbe46f9be8ca098da06b7fb",
+      "question_type": "perception",
+      "question": "What is the status of the cars that are to the front of the ego car?",
+      "reference": "Many cars are moving.",
+      "prediction": "The cars that are to the front of the ego car are in motion, as indicated by their headlights and taillights being on.",
+      "selected_cameras": [
+        "CAM_FRONT_LEFT",
+        "CAM_FRONT",
+        "CAM_FRONT_RIGHT"
+      ],
+      "latency_ms": 7895.13
+    },
+    {
+      "id": "c0f7a7d51fbe46f9be8ca098da06b7fb",
+      "question_type": "perception",
+      "question": "What are objects to the front right of the ego car?",
+      "reference": "There are two cars to the front right of the ego car.",
+      "prediction": "Based on the camera view labeled **CAM_FRONT_RIGHT**, here are the objects visible to the front right of the ego car:\n\n- A **car** (appearing as a white sedan) is driving on the road in front of the camera.\n- A **streetlight** is visible in the background, casting",
+      "selected_cameras": [
+        "CAM_FRONT_LEFT",
+        "CAM_FRONT",
+        "CAM_FRONT_RIGHT"
+      ],
+      "latency_ms": 9587.77
+    },
+    {
+      "id": "c0f7a7d51fbe46f9be8ca098da06b7fb",
+      "question_type": "perception",
+      "question": "What is the status of the cars that are to the front right of the ego car?",
+      "reference": "Two cars are moving.",
+      "prediction": "The cars to the front right of the ego car are in motion.",
+      "selected_cameras": [
+        "CAM_FRONT_LEFT",
+        "CAM_FRONT",
+        "CAM_FRONT_RIGHT"
+      ],
+      "latency_ms": 6520.1
+    },
+    {
+      "id": "c0f7a7d51fbe46f9be8ca098da06b7fb",
+      "question_type": "perception",
+      "question": "What are objects to the back right of the ego car?",
+      "reference": "There are two cars to the back right of the ego car.",
+      "prediction": "Based on the camera view labeled **CAM_FRONT_RIGHT**, we can analyze the scene to identify objects to the back right of the ego car.\n\n- The image shows a nighttime street scene with multiple lanes of traffic.\n- The ego car is traveling in the rightmost lane, indicated by the lane markings.\n-",
+      "selected_cameras": [
+        "CAM_FRONT_LEFT",
+        "CAM_FRONT",
+        "CAM_FRONT_RIGHT"
+      ],
+      "latency_ms": 8954.61
+    },
+    {
+      "id": "c0f7a7d51fbe46f9be8ca098da06b7fb",
+      "question_type": "perception",
+      "question": "What is the status of the cars that are to the back right of the ego car?",
+      "reference": "Two cars are moving.",
+      "prediction": "The cars to the back right of the ego car are in motion, as indicated by their blurred appearance and the sense of movement across the frame.",
+      "selected_cameras": [
+        "CAM_FRONT_LEFT",
+        "CAM_FRONT",
+        "CAM_FRONT_RIGHT"
+      ],
+      "latency_ms": 7125.93
+    },
+    {
+      "id": "c0f7a7d51fbe46f9be8ca098da06b7fb",
+      "question_type": "perception",
+      "question": "Are there parked trucks to the front right of the ego car?",
+      "reference": "No.",
+      "prediction": "No, there are no parked trucks visible to the front right of the ego car. The image shows a road scene at night with a car driving on the road, and the area to the front right appears to be an open road or a different lane, not a parking area.",
+      "selected_cameras": [
+        "CAM_FRONT_LEFT",
+        "CAM_FRONT",
+        "CAM_FRONT_RIGHT"
+      ],
+      "latency_ms": 8948.56
+    },
+    {
+      "id": "c0f7a7d51fbe46f9be8ca098da06b7fb",
+      "question_type": "perception",
+      "question": "Are there moving construction vehicles to the front right of the ego car?",
+      "reference": "No.",
+      "prediction": "No, there are no moving construction vehicles to the front right of the ego car.",
+      "selected_cameras": [
+        "CAM_FRONT_LEFT",
+        "CAM_FRONT",
+        "CAM_FRONT_RIGHT"
+      ],
+      "latency_ms": 6996.33
+    }
+  ]
+}
