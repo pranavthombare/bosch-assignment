@@ -1,0 +1,28 @@
+services:
+  drivelm-vllm:
+    build: .
+    container_name: drivelm-qwen-vllm
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+    environment:
+      - PYTHONUNBUFFERED=1
+      - PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+      - DRIVELM_MODEL_ID=Qwen/Qwen3.5-0.8B
+      - DRIVELM_LORA_PATH=/app/models/qwen-lora
+      - DRIVELM_LORA_NAME=drivelm-lora
+      - DRIVELM_VLLM_HOST=0.0.0.0
+      - DRIVELM_VLLM_PORT=8001
+      - DRIVELM_VLLM_DTYPE=float16
+      - DRIVELM_VLLM_MAX_MODEL_LEN=1024
+      - DRIVELM_VLLM_GPU_MEMORY_UTILIZATION=0.60
+      - DRIVELM_VLLM_MAX_NUM_SEQS=4
+      - DRIVELM_VLLM_MAX_NUM_BATCHED_TOKENS=2048
+      - DRIVELM_VLLM_ATTENTION_BACKEND=TRITON_ATTN
+      - DRIVELM_VLLM_IMAGE_COUNT=6
+      - DRIVELM_VLLM_IMAGE_WIDTH=336
+      - DRIVELM_VLLM_IMAGE_HEIGHT=336
+    gpus: all
+    shm_size: "8gb"

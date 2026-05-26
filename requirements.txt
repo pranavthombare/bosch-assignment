@@ -1,0 +1,14 @@
+nuscenes-devkit
+torch
+torchvision
+Pillow
+requests
+httpx
+pandas
+transformers @ git+https://github.com/huggingface/transformers.git@main
+evaluate
+rouge_score
+accelerate
+peft
+bitsandbytes
+pyarrow<21
