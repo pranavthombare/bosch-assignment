@@ -6,9 +6,16 @@ import shutil
 import sys
 from pathlib import Path
 
+try:
+    from dotenv import load_dotenv
+
+    load_dotenv()
+except ImportError:
+    pass
+
 
 DEFAULT_MODEL_ID = "Qwen/Qwen3.5-0.8B"
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 
 def env_bool(name: str, default: bool) -> bool:

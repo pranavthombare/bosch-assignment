@@ -3,16 +3,21 @@
 `finetune.py` runs a small Qwen LoRA/QLoRA SFT loop against the local DriveLM samples.
 
 ```bash
+# defaults already match the run documented here; override via .env or shell
 PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True \
-.venv/bin/python src/train/finetune.py \
-  --num-samples 1024 \
-  --epochs 1 \
-  --camera-mode front-arc \
-  --image-long-edge 448 \
-  --quantization auto \
-  --gradient-accumulation-steps 2 \
-  --checkpoint-every 200 \
-  --output-dir models/qwen-lora
+.venv/bin/python src/train/finetune.py
+```
+
+Override knobs from `.env.sample` (uncomment the ones you need):
+```text
+DRIVELM_TRAIN__NUM_SAMPLES=1024
+DRIVELM_TRAIN__EPOCHS=1
+DRIVELM_DATA__CAMERA_MODE=front-arc
+DRIVELM_DATA__IMAGE_LONG_EDGE=448
+DRIVELM_MODEL__QUANTIZATION=auto
+DRIVELM_TRAIN__GRADIENT_ACCUMULATION_STEPS=2
+DRIVELM_TRAIN__CHECKPOINT_EVERY=200
+DRIVELM_TRAIN__OUTPUT_DIR=models/qwen-lora
 ```
 
 ## Key design choices
@@ -61,4 +66,4 @@ This is not yet implemented in `finetune.py`. A `--stratified` flag plus a helpe
 
 ## Outputs
 
-Adapters and processor files are written to `--output-dir` (default `models/qwen-lora`). `src/serve/vllm_server.py` auto-attaches the adapter at startup if `adapter_config.json` exists there; restart the server after training and benchmark with `--model-id drivelm-lora`.
+Adapters and processor files are written to `DRIVELM_TRAIN__OUTPUT_DIR` (default `models/qwen-lora`). `src/vllm_launcher.py` auto-attaches the adapter at startup if `adapter_config.json` exists there; restart the launcher after training and the next `src/eval/eval.py` run will exercise both base and LoRA.

@@ -1,7 +1,20 @@
+"""Shared Qwen-VLM helpers used by training (``src/train/finetune.py``) and the
+endpoint eval client (``src/eval/eval.py``).
+
+This module covers three concerns:
+
+1. Device + dtype + quantization resolution for in-process Transformers loads
+   (used by training only — vLLM serving has its own knobs).
+2. Camera-mode → image-path selection and PIL preprocessing with a process-wide
+   LRU cache. Used by both training and eval.
+3. Chat-template message construction matching the locked prompt
+   ``"Question: {q}\\nAnswer in one short sentence."``. Used by training to
+   build supervised inputs.
+"""
+
 from __future__ import annotations
 
 import os
-from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
 from typing import Any
@@ -25,13 +38,6 @@ CAMERA_MODES = {
         "CAM_BACK_RIGHT",
     ],
 }
-
-
-@dataclass(frozen=True)
-class GenerationResult:
-    prediction: str
-    selected_cameras: list[str]
-    num_images: int
 
 
 def resolve_device(requested_device: str | None = None) -> str:
@@ -214,121 +220,6 @@ def apply_qwen_chat_template(
         return_tensors="pt",
     )
     return {key: value.to(device) if hasattr(value, "to") else value for key, value in inputs.items()}
-
-
-def generate_qwen_answer(
-    model,
-    processor,
-    image_paths: dict[str, str],
-    question: str,
-    nuscenes_root: Path,
-    camera_mode: str = "front-arc",
-    composite_image_path: str | None = None,
-    device: str = "cuda",
-    max_new_tokens: int = 64,
-    use_image_cache: bool = True,
-    max_image_long_edge: int | None = 448,
-) -> GenerationResult:
-    selected_images = select_image_paths(
-        image_paths=image_paths,
-        camera_mode=camera_mode,
-        nuscenes_root=nuscenes_root,
-        composite_image_path=composite_image_path,
-    )
-    if not selected_images:
-        raise FileNotFoundError("No usable image paths were found for this example.")
-
-    messages = build_qwen_messages(
-        selected_images,
-        question,
-        use_image_cache=use_image_cache,
-        max_image_long_edge=max_image_long_edge,
-    )
-    inputs = apply_qwen_chat_template(
-        processor,
-        messages,
-        device=device,
-        add_generation_prompt=True,
-    )
-
-    with torch.no_grad():
-        generated_ids = model.generate(**inputs, max_new_tokens=max_new_tokens)
-
-    input_length = inputs["input_ids"].shape[-1]
-    generated_ids = generated_ids[:, input_length:]
-    prediction = processor.batch_decode(generated_ids, skip_special_tokens=True)[0].strip()
-    return GenerationResult(
-        prediction=prediction,
-        selected_cameras=[camera for camera, _ in selected_images],
-        num_images=len(selected_images),
-    )
-
-
-def generate_qwen_answers_batch(
-    model,
-    processor,
-    samples: list[dict[str, Any]],
-    nuscenes_root: Path,
-    camera_mode: str = "front-arc",
-    device: str = "cuda",
-    max_new_tokens: int = 64,
-    use_image_cache: bool = True,
-    max_image_long_edge: int | None = 448,
-) -> list[GenerationResult]:
-    if not samples:
-        return []
-
-    selected_lists: list[list[tuple[str, Path]]] = []
-    messages_batch: list[list[dict[str, Any]]] = []
-    for sample in samples:
-        selected = select_image_paths(
-            image_paths=sample["image_paths"],
-            camera_mode=camera_mode,
-            nuscenes_root=nuscenes_root,
-            composite_image_path=sample.get("composite_image_path"),
-        )
-        if not selected:
-            raise FileNotFoundError("No usable image paths were found for a batch example.")
-        selected_lists.append(selected)
-        messages_batch.append(
-            build_qwen_messages(
-                selected,
-                sample["question"],
-                use_image_cache=use_image_cache,
-                max_image_long_edge=max_image_long_edge,
-            )
-        )
-
-    previous_padding_side = getattr(processor.tokenizer, "padding_side", "right")
-    processor.tokenizer.padding_side = "left"
-    try:
-        inputs = processor.apply_chat_template(
-            messages_batch,
-            tokenize=True,
-            add_generation_prompt=True,
-            return_dict=True,
-            return_tensors="pt",
-            padding=True,
-        )
-        inputs = {key: value.to(device) if hasattr(value, "to") else value for key, value in inputs.items()}
-
-        with torch.no_grad():
-            generated_ids = model.generate(**inputs, max_new_tokens=max_new_tokens)
-    finally:
-        processor.tokenizer.padding_side = previous_padding_side
-
-    input_length = inputs["input_ids"].shape[-1]
-    generated_only = generated_ids[:, input_length:]
-    predictions = processor.batch_decode(generated_only, skip_special_tokens=True)
-
-    return [
-        GenerationResult(
-            prediction=prediction.strip(),
-            selected_cameras=[camera for camera, _ in selected],
-            num_images=len(selected),
-        )
-        for prediction, selected in zip(predictions, selected_lists)
-    ]
 
 
 def freeze_vision_modules(model) -> list[str]:

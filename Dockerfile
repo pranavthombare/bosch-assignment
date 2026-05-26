@@ -14,4 +14,4 @@ COPY src/ ./src/
 EXPOSE 8001
 
 ENTRYPOINT []
-CMD ["python3", "-m", "src.serve.vllm_server"]
+CMD ["python3", "-m", "src.vllm_launcher"]

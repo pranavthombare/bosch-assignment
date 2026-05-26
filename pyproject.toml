@@ -30,7 +30,8 @@ dependencies = [
   "torch>=2.4.0",
   "transformers @ git+https://github.com/huggingface/transformers.git@main",
   "trl>=0.10.1",
-  "httpx>=0.27.2"
+  "httpx>=0.27.2",
+  "openai>=1.50.0"
 ]
 
 [project.optional-dependencies]

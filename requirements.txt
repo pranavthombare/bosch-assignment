@@ -4,6 +4,7 @@ torchvision
 Pillow
 requests
 httpx
+openai
 pandas
 transformers @ git+https://github.com/huggingface/transformers.git@main
 evaluate
