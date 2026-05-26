@@ -24,5 +24,6 @@ services:
       - DRIVELM_VLLM_IMAGE_COUNT=6
       - DRIVELM_VLLM_IMAGE_WIDTH=336
       - DRIVELM_VLLM_IMAGE_HEIGHT=336
+      - DRIVELM_ENABLE_LORA=${DRIVELM_ENABLE_LORA:-}
     gpus: all
     shm_size: "8gb"
