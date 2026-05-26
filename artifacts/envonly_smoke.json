@@ -1,0 +1,201 @@
+{
+  "config": {
+    "data": {
+      "nuscenes_dir": "data/nuscenes",
+      "drivelm_json": "data/drivelm/v1_1_train_nus.json",
+      "camera_mode": "front-arc",
+      "image_long_edge": 448
+    },
+    "model": {
+      "model_id": "Qwen/Qwen3.5-0.8B",
+      "lora_model_id": "drivelm-lora",
+      "quantization": "auto",
+      "device": "auto",
+      "dtype": "auto",
+      "max_new_tokens": 64
+    },
+    "train": {
+      "num_samples": 1024,
+      "epochs": 1,
+      "lr": 0.0002,
+      "lora_r": 8,
+      "lora_alpha": 16,
+      "gradient_accumulation_steps": 2,
+      "checkpoint_every": 200,
+      "output_dir": "models/qwen-lora"
+    },
+    "eval": {
+      "base_url": "http://127.0.0.1:8001/v1",
+      "api_key": "local",
+      "num_samples": 10,
+      "temperature": 0.0,
+      "concurrency": 8,
+      "timeout": 180,
+      "max_retries": 3,
+      "run_base": true,
+      "run_lora": false,
+      "output_base_json": "artifacts/envonly_smoke.json",
+      "output_lora_json": "artifacts/finetuned_front_arc_full.json"
+    }
+  },
+  "label": "base",
+  "served_model_id": "Qwen/Qwen3.5-0.8B",
+  "num_samples": 10,
+  "num_succeeded": 10,
+  "num_failed": 0,
+  "rouge": {
+    "metric_backend": "rouge_score",
+    "rouge1": 0.41182116192985757,
+    "rouge2": 0.265,
+    "rougeL": 0.41182116192985757,
+    "exact_match": 0.0,
+    "token_f1": 0.3119122906079428
+  },
+  "latency": {
+    "mean_ms": 1115.8,
+    "min_ms": 525.53,
+    "max_ms": 1597.96
+  },
+  "records": [
+    {
+      "id": "c0f7a7d51fbe46f9be8ca098da06b7fb",
+      "question_type": "perception",
+      "question": "What are objects to the back of the ego car?",
+      "reference": "There are many cars behind the ego car.",
+      "prediction": "A car is to the back of the ego car.",
+      "selected_cameras": [
+        "CAM_FRONT_LEFT",
+        "CAM_FRONT",
+        "CAM_FRONT_RIGHT"
+      ],
+      "latency_ms": 1423.74,
+      "error": null
+    },
+    {
+      "id": "c0f7a7d51fbe46f9be8ca098da06b7fb",
+      "question_type": "perception",
+      "question": "What is the status of the cars that are to the back of the ego car?",
+      "reference": "Many cars are moving, and two are parked.",
+      "prediction": "They are driving in the same direction.",
+      "selected_cameras": [
+        "CAM_FRONT_LEFT",
+        "CAM_FRONT",
+        "CAM_FRONT_RIGHT"
+      ],
+      "latency_ms": 705.61,
+      "error": null
+    },
+    {
+      "id": "c0f7a7d51fbe46f9be8ca098da06b7fb",
+      "question_type": "perception",
+      "question": "What are objects to the front of the ego car?",
+      "reference": "There are many cars in front of the ego car.",
+      "prediction": "A car is to the front of the ego car.",
+      "selected_cameras": [
+        "CAM_FRONT_LEFT",
+        "CAM_FRONT",
+        "CAM_FRONT_RIGHT"
+      ],
+      "latency_ms": 865.5,
+      "error": null
+    },
+    {
+      "id": "c0f7a7d51fbe46f9be8ca098da06b7fb",
+      "question_type": "perception",
+      "question": "What is the status of the cars that are to the front of the ego car?",
+      "reference": "Many cars are moving.",
+      "prediction": "They are driving in the opposite direction.",
+      "selected_cameras": [
+        "CAM_FRONT_LEFT",
+        "CAM_FRONT",
+        "CAM_FRONT_RIGHT"
+      ],
+      "latency_ms": 1145.19,
+      "error": null
+    },
+    {
+      "id": "c0f7a7d51fbe46f9be8ca098da06b7fb",
+      "question_type": "perception",
+      "question": "What are objects to the front right of the ego car?",
+      "reference": "There are two cars to the front right of the ego car.",
+      "prediction": "A car is to the front right of the ego car.",
+      "selected_cameras": [
+        "CAM_FRONT_LEFT",
+        "CAM_FRONT",
+        "CAM_FRONT_RIGHT"
+      ],
+      "latency_ms": 1469.25,
+      "error": null
+    },
+    {
+      "id": "c0f7a7d51fbe46f9be8ca098da06b7fb",
+      "question_type": "perception",
+      "question": "What is the status of the cars that are to the front right of the ego car?",
+      "reference": "Two cars are moving.",
+      "prediction": "They are moving.",
+      "selected_cameras": [
+        "CAM_FRONT_LEFT",
+        "CAM_FRONT",
+        "CAM_FRONT_RIGHT"
+      ],
+      "latency_ms": 525.53,
+      "error": null
+    },
+    {
+      "id": "c0f7a7d51fbe46f9be8ca098da06b7fb",
+      "question_type": "perception",
+      "question": "What are objects to the back right of the ego car?",
+      "reference": "There are two cars to the back right of the ego car.",
+      "prediction": "A car is to the back right of the ego car.",
+      "selected_cameras": [
+        "CAM_FRONT_LEFT",
+        "CAM_FRONT",
+        "CAM_FRONT_RIGHT"
+      ],
+      "latency_ms": 1085.96,
+      "error": null
+    },
+    {
+      "id": "c0f7a7d51fbe46f9be8ca098da06b7fb",
+      "question_type": "perception",
+      "question": "What is the status of the cars that are to the back right of the ego car?",
+      "reference": "Two cars are moving.",
+      "prediction": "They are moving in the same direction.",
+      "selected_cameras": [
+        "CAM_FRONT_LEFT",
+        "CAM_FRONT",
+        "CAM_FRONT_RIGHT"
+      ],
+      "latency_ms": 1083.0,
+      "error": null
+    },
+    {
+      "id": "c0f7a7d51fbe46f9be8ca098da06b7fb",
+      "question_type": "perception",
+      "question": "Are there parked trucks to the front right of the ego car?",
+      "reference": "No.",
+      "prediction": "No, there are no parked trucks to the front right of the ego car.",
+      "selected_cameras": [
+        "CAM_FRONT_LEFT",
+        "CAM_FRONT",
+        "CAM_FRONT_RIGHT"
+      ],
+      "latency_ms": 1256.27,
+      "error": null
+    },
+    {
+      "id": "c0f7a7d51fbe46f9be8ca098da06b7fb",
+      "question_type": "perception",
+      "question": "Are there moving construction vehicles to the front right of the ego car?",
+      "reference": "No.",
+      "prediction": "No, there are no moving construction vehicles to the front right of the ego car.",
+      "selected_cameras": [
+        "CAM_FRONT_LEFT",
+        "CAM_FRONT",
+        "CAM_FRONT_RIGHT"
+      ],
+      "latency_ms": 1597.96,
+      "error": null
+    }
+  ]
+}

@@ -1,0 +1,165 @@
+{
+  "model_id": "Qwen/Qwen3.5-0.8B",
+  "base_url": "http://127.0.0.1:8001/v1",
+  "api": "chat",
+  "camera_mode": "front-arc",
+  "concurrency": 4,
+  "num_samples": 10,
+  "num_succeeded": 10,
+  "num_failed": 0,
+  "rouge": {
+    "metric_backend": "rouge_score",
+    "rouge1": 0.41182116192985757,
+    "rouge2": 0.265,
+    "rougeL": 0.41182116192985757,
+    "exact_match": 0.0,
+    "token_f1": 0.3119122906079428
+  },
+  "latency": {
+    "mean_ms": 731.13,
+    "min_ms": 394.95,
+    "max_ms": 1100.85
+  },
+  "records": [
+    {
+      "id": "c0f7a7d51fbe46f9be8ca098da06b7fb",
+      "question_type": "perception",
+      "question": "What are objects to the back of the ego car?",
+      "reference": "There are many cars behind the ego car.",
+      "prediction": "A car is to the back of the ego car.",
+      "selected_cameras": [
+        "CAM_FRONT_LEFT",
+        "CAM_FRONT",
+        "CAM_FRONT_RIGHT"
+      ],
+      "latency_ms": 1051.45,
+      "error": null
+    },
+    {
+      "id": "c0f7a7d51fbe46f9be8ca098da06b7fb",
+      "question_type": "perception",
+      "question": "What is the status of the cars that are to the back of the ego car?",
+      "reference": "Many cars are moving, and two are parked.",
+      "prediction": "They are driving in the same direction.",
+      "selected_cameras": [
+        "CAM_FRONT_LEFT",
+        "CAM_FRONT",
+        "CAM_FRONT_RIGHT"
+      ],
+      "latency_ms": 549.87,
+      "error": null
+    },
+    {
+      "id": "c0f7a7d51fbe46f9be8ca098da06b7fb",
+      "question_type": "perception",
+      "question": "What are objects to the front of the ego car?",
+      "reference": "There are many cars in front of the ego car.",
+      "prediction": "A car is to the front of the ego car.",
+      "selected_cameras": [
+        "CAM_FRONT_LEFT",
+        "CAM_FRONT",
+        "CAM_FRONT_RIGHT"
+      ],
+      "latency_ms": 754.37,
+      "error": null
+    },
+    {
+      "id": "c0f7a7d51fbe46f9be8ca098da06b7fb",
+      "question_type": "perception",
+      "question": "What is the status of the cars that are to the front of the ego car?",
+      "reference": "Many cars are moving.",
+      "prediction": "They are driving in the opposite direction.",
+      "selected_cameras": [
+        "CAM_FRONT_LEFT",
+        "CAM_FRONT",
+        "CAM_FRONT_RIGHT"
+      ],
+      "latency_ms": 650.01,
+      "error": null
+    },
+    {
+      "id": "c0f7a7d51fbe46f9be8ca098da06b7fb",
+      "question_type": "perception",
+      "question": "What are objects to the front right of the ego car?",
+      "reference": "There are two cars to the front right of the ego car.",
+      "prediction": "A car is to the front right of the ego car.",
+      "selected_cameras": [
+        "CAM_FRONT_LEFT",
+        "CAM_FRONT",
+        "CAM_FRONT_RIGHT"
+      ],
+      "latency_ms": 664.52,
+      "error": null
+    },
+    {
+      "id": "c0f7a7d51fbe46f9be8ca098da06b7fb",
+      "question_type": "perception",
+      "question": "What is the status of the cars that are to the front right of the ego car?",
+      "reference": "Two cars are moving.",
+      "prediction": "They are moving.",
+      "selected_cameras": [
+        "CAM_FRONT_LEFT",
+        "CAM_FRONT",
+        "CAM_FRONT_RIGHT"
+      ],
+      "latency_ms": 394.95,
+      "error": null
+    },
+    {
+      "id": "c0f7a7d51fbe46f9be8ca098da06b7fb",
+      "question_type": "perception",
+      "question": "What are objects to the back right of the ego car?",
+      "reference": "There are two cars to the back right of the ego car.",
+      "prediction": "A car is to the back right of the ego car.",
+      "selected_cameras": [
+        "CAM_FRONT_LEFT",
+        "CAM_FRONT",
+        "CAM_FRONT_RIGHT"
+      ],
+      "latency_ms": 836.31,
+      "error": null
+    },
+    {
+      "id": "c0f7a7d51fbe46f9be8ca098da06b7fb",
+      "question_type": "perception",
+      "question": "What is the status of the cars that are to the back right of the ego car?",
+      "reference": "Two cars are moving.",
+      "prediction": "They are moving in the same direction.",
+      "selected_cameras": [
+        "CAM_FRONT_LEFT",
+        "CAM_FRONT",
+        "CAM_FRONT_RIGHT"
+      ],
+      "latency_ms": 401.56,
+      "error": null
+    },
+    {
+      "id": "c0f7a7d51fbe46f9be8ca098da06b7fb",
+      "question_type": "perception",
+      "question": "Are there parked trucks to the front right of the ego car?",
+      "reference": "No.",
+      "prediction": "No, there are no parked trucks to the front right of the ego car.",
+      "selected_cameras": [
+        "CAM_FRONT_LEFT",
+        "CAM_FRONT",
+        "CAM_FRONT_RIGHT"
+      ],
+      "latency_ms": 907.34,
+      "error": null
+    },
+    {
+      "id": "c0f7a7d51fbe46f9be8ca098da06b7fb",
+      "question_type": "perception",
+      "question": "Are there moving construction vehicles to the front right of the ego car?",
+      "reference": "No.",
+      "prediction": "No, there are no moving construction vehicles to the front right of the ego car.",
+      "selected_cameras": [
+        "CAM_FRONT_LEFT",
+        "CAM_FRONT",
+        "CAM_FRONT_RIGHT"
+      ],
+      "latency_ms": 1100.85,
+      "error": null
+    }
+  ]
+}

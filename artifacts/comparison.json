@@ -1,18 +1,19 @@
 {
+  "note": "Base measured against dockerized vLLM with DRIVELM_ENABLE_LORA=false; LoRA measured against vLLM with --enable-lora. Differences in vLLM kernel paths contribute small numerical noise.",
   "overall": {
     "baseline": {
       "rouge": {
         "metric_backend": "rouge_score",
-        "rouge1": 0.18029545448359652,
-        "rouge2": 0.05274643400045113,
-        "rougeL": 0.1729551898332636,
-        "exact_match": 0.015119363395225464,
-        "token_f1": 0.13065371871494616
+        "rouge1": 0.16583697847857293,
+        "rouge2": 0.06903765453820211,
+        "rougeL": 0.15697403525370848,
+        "exact_match": 0.003713527851458886,
+        "token_f1": 0.11736086714647989
       },
       "latency": {
-        "mean_ms": 1307.47,
-        "min_ms": 272.3,
-        "max_ms": 9193.61
+        "mean_ms": 1419.5,
+        "min_ms": 636.4,
+        "max_ms": 11570.05
       },
       "n": 3770
     },
@@ -32,19 +33,19 @@
       },
       "n": 3770
     },
-    "delta_rougeL": 0.36758393484028207,
-    "delta_exact_match": 0.37745358090185677,
-    "delta_mean_latency_ms": -261.6300000000001
+    "delta_rougeL": 0.38356508941983725,
+    "delta_exact_match": 0.38885941644562333,
+    "delta_mean_latency_ms": -373.6600000000001
   },
   "per_category": {
     "perception": {
       "n": 1738,
       "baseline": {
-        "rouge1": 0.2246772994743013,
-        "rouge2": 0.08816234694632717,
-        "rougeL": 0.21688484406614858,
-        "exact_match": 0.03222094361334868,
-        "latency_ms": 1153.5707767548881
+        "rouge1": 0.2232672704306958,
+        "rouge2": 0.1232034416444527,
+        "rougeL": 0.21737315435848828,
+        "exact_match": 0.007479861910241657,
+        "latency_ms": 1254.1017951668612
       },
       "lora": {
         "rouge1": 0.5023637086703244,
@@ -53,16 +54,16 @@
         "exact_match": 0.2894131185270426,
         "latency_ms": 1225.163112773301
       },
-      "delta_rougeL": 0.27173317347045756
+      "delta_rougeL": 0.2712448631781179
     },
     "prediction": {
       "n": 1181,
       "baseline": {
-        "rouge1": 0.12641385415019885,
-        "rouge2": 0.02136245353461104,
-        "rougeL": 0.12428611427726229,
+        "rouge1": 0.1032490632217502,
+        "rouge2": 0.019691697728414004,
+        "rougeL": 0.0973748470215527,
         "exact_match": 0.000846740050804403,
-        "latency_ms": 1387.511405588484
+        "latency_ms": 1543.867231160032
       },
       "lora": {
         "rouge1": 0.6612193940569789,
@@ -71,16 +72,16 @@
         "exact_match": 0.6020321761219306,
         "latency_ms": 740.4036663844207
       },
-      "delta_rougeL": 0.5351288866213003
+      "delta_rougeL": 0.5620401538770099
     },
     "planning": {
       "n": 813,
       "baseline": {
-        "rouge1": 0.15395412338916867,
-        "rouge2": 0.014798507807382111,
-        "rougeL": 0.14047768570192318,
+        "rouge1": 0.1258923218165636,
+        "rouge2": 0.02071965796467919,
+        "rougeL": 0.10749066910371781,
         "exact_match": 0.0,
-        "latency_ms": 1531.3293849938514
+        "latency_ms": 1597.5834932349333
       },
       "lora": {
         "rouge1": 0.514735520024707,
@@ -89,16 +90,16 @@
         "exact_match": 0.32718327183271834,
         "latency_ms": 1129.5070110701113
       },
-      "delta_rougeL": 0.3619336264240538
+      "delta_rougeL": 0.3949206430222592
     },
     "behavior": {
       "n": 38,
       "baseline": {
-        "rouge1": 0.3885592855275403,
-        "rouge2": 0.22020138729489977,
-        "rougeL": 0.3711828222981596,
+        "rouge1": 0.33892872510311917,
+        "rouge2": 0.15903681811636772,
+        "rougeL": 0.3054726925698218,
         "exact_match": 0.0,
-        "latency_ms": 1069.7536842105264
+        "latency_ms": 1309.3355263157896
       },
       "lora": {
         "rouge1": 0.036444018974163994,
@@ -107,7 +108,7 @@
         "exact_match": 0.0,
         "latency_ms": 546.6194736842104
       },
-      "delta_rougeL": -0.3347388033239956
+      "delta_rougeL": -0.2690286735956578
     }
   }
 }
